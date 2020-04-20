@@ -1,0 +1,13 @@
+To stop all the app servers:
+
+for i in `knife search node "platform:windows AND chef_environment:softlayer13 AND (tags:ms-app-prod or tags:ms-mssql-prod) AND fqdn:*learn.sso" -c /etc/chef-server/knife_deploy_ad.rb | grep "FQDN" | cut -f 9 -d ' '`; do knife winrm -m $i "powershell -command \"(Get-Service | ? { \$_.ServiceName -like 'IBM*' -and \$_.Status -eq 'Running'} )| stop-service\"" -c /etc/chef-server/knife_deploy_ad.rb;  done
+
+
+Restart app servers:
+
+for i in `while read line; do echo $line; done </home/suddalli/learn_sso_prod_sl13.txt`; do knife winrm -m $i 'powershell -command restart-computer -f' -c /etc/chef-server/knife_deploy_ad.rb; done
+
+
+Check LMS services:
+for i in `while read line; do echo $line; done </home/suddalli/learn_sso_prod_sl13.txt`;  do knife winrm -m $i "powershell -command Get-Service -name *lms* " -c /etc/chef-server/knife_deploy_ad.rb;  done
+
